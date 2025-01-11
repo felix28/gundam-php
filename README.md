@@ -1,154 +1,66 @@
-## Docker (Build and push images)
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-### Prerequisites
-```
-Minikube
-```
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-### Background
-By using Docker in development environment with programmers using different local machines (Windows, Linux and Mac), we are sure what works on me should work on you. What don't work on me should don't work on you as well. This page will teach you how to build a Docker Image within Minikube and how to push an image to Amazon ECR.
+## About Laravel
 
-### Build Docker Image within Minikube
-1. Clone the Laravel repository and install its dependencies:
-```
-	git clone https://github.com/learnk8s/laravel-kubernetes-demo.git
-```
-2. Before you can test the Docker image, you will need to build it:
-```
-cd /to/your/project/directory 
-docker build -t john-doe/laravel-kubernetes-demo:sour-cream .
-```
-- **-t** - This is the tag of Docker image.
-- **john-doe/laravel-kubernetes-demo:sour-cream** - This is the format for naming a Docker Image. Before / sign is your username. You can put your real Docker Hub username if you want to push this Docker Image to your Docker Hub account. After / sign is the descriptive name we give to our container. After : sign is the version name or number. E.g., you can put 1.0.0 or class-s for your version. If you don't put : sign, the default version will be named as "latest".
-- **.** - Tells us the file named Dockerfile is within this directory.
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-After running the command above, you must see "Successfully built" and "Successfully tagged" below your terminal.
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-3. We will now run the app. Inside your project directory folder, create a file named run-docker-image.sh then copy-paste the command below (You can also copy-paste this command in your terminal if you don't want to create a Shell Script):
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-```
-docker run -ti \ 
-  -p 8080:80 \ 
-  -e APP_KEY=base64:cUPmwHx4LXa4Z25HhzFiWCf7TlQmSqnt98pnuiHmzgY= \     
-  laravel-kubernetes-demo
-```
-```
-sudo chmod +x run-docker-image.sh
-./run-docker-image.sh
-```
-You must be able to see the app by visiting <a href="localhost:8080" target="_blank">localhost:8080</a>.
-Feel free to change port 8080 into your available port number.
- 
-4. Since we verify that we can build the Docker Image and run our app, the next step is to build the image within Minikube. Run the command below:
+## Learning Laravel
 
-```
-cd /to/your/project/directory
-eval $(minikube docker-env)
-docker build -t john-doe/laravel-kubernetes-demo:sour-cream .
-```
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-<strong>IMPORTANT:</strong>Don’t forget to execute the `eval $(minikube docker-env)`. Building the image inside Minikube is necessary. You should run the command only once in the current terminal.
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-5. Before deployment, make sure the current cluster is Minikube. Not staging and a big no to production cluster as well! Run this command to set our current cluster to Minikube:
-```
-minikube start
-```
-6. Now that the app’s image is built and available inside Minikube, go ahead with deploying it. Create a file named deploy-docker-image.sh then copy-paste the command below (You can also copy-paste this command in your terminal if you don't want to create a Shell Script):
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-```
-kubectl run laravel-kubernetes-demo \ 
-  --image=john-doe/laravel-kubernetes-demo:sour-cream \ 
-  --port=80 \ 
-  --image-pull-policy=IfNotPresent \ 
-  --env=APP_KEY=base64:cUPmwHx4LXa4Z25HhzFiWCf7TlQmSqnt98pnuiHmzgY=
-```
-- **laravel-kubernetes-demo** - The pod name.
-- **image-pull-policy=IfNotPresent** - We will only pull the image if it does not exists. Since we build it inside Minikube (thus making it exists), no pulling of image from Docker Hub will happen. 
-```
-sudo chmod +x deploy-docker-image.sh
-./deploy-docker-image.sh
-```
+## Laravel Sponsors
 
-To check if the STATUS of the pod is Running, run `kubectl get pods`
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-You can also open a new terminal then run `minikube dashboard`. If the color of the pod is green, then your deployment is successful.
+### Premium Partners
 
-7. A pod running in a cluster has a dynamic IP. To avoid managing IP addresses manually, you need to use a Service. So even if the IP address of a Pod changes, the service is always pointing to it. Run the command below to create a service:
-```
-kubectl expose pods laravel-kubernetes-demo --type=NodePort --port=80
-```
-It should show `service/laravel-kubernetes-demo exposed`.
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
-You can also verify that the Service was created successfully with:
-```
-kubectl get services
-```
-To get the URL of the service type `minikube service --url=true laravel-kubernetes-demo` then visit it using your browser.
+## Contributing
 
-Congrats! You now have a movie trailer of your app before viewing it in real Kubernetes.
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-### Push Docker Image to Amazon ECR
-1. Open the Amazon ECR console at <a href="https://console.aws.amazon.com/ecr/repositories" target="_blank">https://console.aws.amazon.com/ecr/repositories</a>.
+## Code of Conduct
 
-2. In the navigation pane, choose Repositories.
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-3. On the Repositories page, choose Create repository.
+## Security Vulnerabilities
 
-4. For Repository name, enter a unique name for your repository (e.g. `laravel-kubernetes-demo`).
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-5. Click Create Repository button.
+## License
 
-6. In Terminal, go to your project directory then run these:
-```
-cd project/dir
-minikube start
-eval $(minikube docker-env)
-```
-Remember `eval $(minikube docker-env)` should only run once.
-
-7. Build image with a format similar like this:
-```
-docker build -t 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com/gundam-laravel:universal-century .
-```
-8. Log-in to ECR:
-```
-aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com
-``` 
-You must see `Login Succeeded` in Terminal.
-
-9. Push image to ECR:
-```
-docker push 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com/gundam-laravel:universal-century
-```
-
-### Pull Docker Image from Amazon ECR
-1. Check if image exists:
-```
-docker images
-```
-2. Pull then check if image now exists:
-```
-docker pull 105618632367.dkr.ecr.us-east-1.amazonaws.com/laravel-kubernetes-demo:sour-cream
-docker images
-```
-
-### Important
-```
-Whenever we want to launch an image on minikube, we will need to build it in the appropriate docker environment. To use it, we can use this command.
-```
-```
-eval $(minikube docker-env)
-```
-```
-After switching your docker context to that of Minikube, you must authenticate your minikube docker instance to be able to pull images directly from our staging ECR respositories. After ensuring your current shell environment is making use of your staging AWS credentials, this can be accomplished with the following command.
-```
-```
-eval $(aws ecr get-login --no-include-email --region us-east-1)
-```
-```
-For example, once in this environment, the base airflow image can be pulled from staging using:
-```
-```
-docker pull 105618632367.dkr.ecr.us-east-1.amazonaws.com/airflow-base:latest
-docker tag 105618632367.dkr.ecr.us-east-1.amazonaws.com/airflow-base:latest airflow-base:latest
-```
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
