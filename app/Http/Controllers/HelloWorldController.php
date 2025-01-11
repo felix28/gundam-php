@@ -19,7 +19,7 @@ class HelloWorldController extends Controller
     
     public function hi(): JsonResponse
     {
-        return response()->json(['info' => 'Hello Light Yagami!']);
+        return response()->json(['info' => 'Hello Tamahome!']);
         //Running command php artisan cache:clear
     }
 
