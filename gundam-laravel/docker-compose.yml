@@ -1,0 +1,82 @@
+services:
+
+  #PHP Service
+  gundam-dev-php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #image: digitalocean.com/php
+    container_name: gundam-dev-php
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: gundam-dev-php
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - app-network
+
+  #Nginx Service
+  gundam-dev-nginx:
+    build:
+      context: ../nginx/
+      dockerfile: Dockerfile
+    #image: nginx:stable-alpine
+    container_name: gundam-dev-nginx
+    restart: unless-stopped 
+    tty: true
+    ports:
+      - 7001:80
+      #- "443:443"
+    volumes:
+      - .:/var/www/html
+      #- ../../nginx/default.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      - app-network
+
+  #MySQL Service
+  gundam-dev-mysql:
+    image: mysql:8.0.39
+    container_name: gundam-dev-mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+      - 7002:3306
+    environment:
+      MYSQL_DATABASE: gundam
+      MYSQL_ROOT_PASSWORD: rootpassword
+      SERVICE_TAGS: dev
+      SERVICE_NAME: gundam-dev-mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ../mysql-dev/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  gundam-dev-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: gundam-dev-phpmyadmin
+    restart: unless-stopped
+    links: 
+      - gundam-dev-mysql:db
+    ports:
+      - 7003:80
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
+
+##docker network ls
+##docker inspect db
+##docker run --name my-own-phpmyadmin -d --link db --network gundamdock1_app-network -p 8088:80 phpmyadmin/phpmyadmin
