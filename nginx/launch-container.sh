@@ -1,4 +1,4 @@
-docker build -t felix28/gundam-nginx:cosmic-era .
+docker build -t felix28/gundam-nginx:cosmic-era -f Dockerfile .
 docker build -t 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com/gundam-nginx:latest .
 docker push 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com/gundam-nginx:latest
 docker run -d \
