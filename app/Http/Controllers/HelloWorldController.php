@@ -19,7 +19,8 @@ class HelloWorldController extends Controller
     
     public function hi(): JsonResponse
     {
-        return response()->json(['info' => 'Hi Felix!']);
+        return response()->json(['info' => 'Hi Felix III!']);
+        //Running command php artisan cache:clear
     }
 
     public function testDBConnection(): JsonResponse
