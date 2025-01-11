@@ -25,8 +25,8 @@ class HelloWorldController extends Controller
     public function testDBConnection(): JsonResponse
     {
         try {
-             
             $tables = Schema::getTables();
+            
             return response()->json(['success' => $tables]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
