@@ -27,7 +27,7 @@ class HelloWorldController extends Controller
         try {
             $tables = Schema::getTables();
             
-            return response()->json(['success' => $tables]);
+            return response()->json(['tables' => $tables]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
