@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Http\JsonResponse;
 
 class HelloWorldController extends Controller
@@ -24,9 +25,9 @@ class HelloWorldController extends Controller
     public function testDBConnection(): JsonResponse
     {
         try {
-            // Attempt to connect to the 'gundam' database
-            DB::connection('gundam')->getPdo();
-            return response()->json(['success' => 'Wow! connected to Gundam database!']);
+             
+            $tables = Schema::getTables();
+            return response()->json(['success' => $tables]);
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()]);
         }
