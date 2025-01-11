@@ -1,7 +1,8 @@
 # Load the environment variables from the .env file
 source gundam-laravel/.env
 
-docker build -t felix28/gundam-laravel:version1 .
+aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com
+docker build -t 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com/gundam-laravel:latest .
 docker build -t 221082179682.dkr.ecr.ap-southeast-1.amazonaws.com/gundam-laravel:universal-century .
 
 echo "APP_NAME=$APP_NAME"

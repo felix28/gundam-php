@@ -19,7 +19,7 @@ class HelloWorldController extends Controller
     
     public function hi(): JsonResponse
     {
-        return response()->json(['info' => 'Hi!']);
+        return response()->json(['info' => 'Hi Felix!']);
     }
 
     public function testDBConnection(): JsonResponse
