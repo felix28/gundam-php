@@ -14,13 +14,12 @@ class HelloWorldController extends Controller
      */
     public function index(): JsonResponse
     {
-        return response()->json(['message' => 'Hello co-pilots!']);
+        return response()->json(['message' => 'Hello mobile suit co-pilots!']);
     }
     
     public function hi(): JsonResponse
     {
-        return response()->json(['info' => 'Hello Tamahome!']);
-        //Running command php artisan cache:clear
+        return response()->json(['info' => 'Welcome Amuro Ray!']);
     }
 
     public function testDBConnection(): JsonResponse
